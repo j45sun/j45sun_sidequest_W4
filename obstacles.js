@@ -7,7 +7,7 @@ class Obstacle {
   }
 
   draw() {
-    fill(200, 50, 50); // red for danger
+    fill(120, 0, 0); 
     rect(this.x, this.y, this.w, this.h);
   }
 }

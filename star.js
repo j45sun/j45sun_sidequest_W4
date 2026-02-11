@@ -14,7 +14,7 @@ class Star {
     push();
     translate(this.x, this.y);
     rotate(this.angle);
-    fill(255, 200, 0);
+    fill(255, 183, 3);
     beginShape();
     for (let i = 0; i < 5; i++) {
       let a = (i * TWO_PI) / 5;
