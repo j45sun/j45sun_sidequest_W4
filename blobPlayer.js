@@ -82,7 +82,7 @@ class BlobPlayer {
   Input is polled with keyIsDown to get smooth movement (held keys).
   This keeps the behavior aligned with your original blob example. 
   */
-  update(platforms) {
+  update(platforms, obstacles = []) {
     // 1) Horizontal input (A/D or arrows)
     let move = 0;
     if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) move -= 1;
@@ -123,6 +123,15 @@ class BlobPlayer {
       }
     }
 
+    // obstacle collisions: if we overlap an obstacle, we reset the player to the start of the level.
+    for (const o of obstacles) {
+      if (overlapAABB(box, o)) {
+        if (this.vx > 0) box.x = o.x - box.w;
+        else if (this.vx < 0) box.x = o.x + o.w;
+        this.vx = 0;
+      }
+    }
+
     // 8) Move in Y and resolve collisions
     box.y += this.vy;
 
@@ -139,6 +148,18 @@ class BlobPlayer {
         } else if (this.vy < 0) {
           // Rising: snap to platform bottom (head bump)
           box.y = s.y + s.h;
+          this.vy = 0;
+        }
+      }
+    }
+
+    for (const o of obstacles) {
+      if (overlapAABB(box, o)) {
+        if (this.vy > 0) {
+          box.y = o.y - box.h;
+          this.vy = 0;
+        } else if (this.vy < 0) {
+          box.y = o.y + o.h;
           this.vy = 0;
         }
       }

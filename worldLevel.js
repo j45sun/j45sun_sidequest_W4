@@ -54,6 +54,8 @@ class WorldLevel {
     // Convert raw platform objects into Platform instances.
     this.platforms = (levelJson.platforms || []).map((p) => new Platform(p));
 
+    this.obstacles = (levelJson.obstacles || []).map((o) => new Obstacle(o));
+
     // Create the goal star (if this level has one)
     this.goal = levelJson.goal ? new Star(levelJson.goal) : null;
   }
@@ -86,6 +88,10 @@ class WorldLevel {
     if (this.goal) {
       this.goal.update();
       this.goal.draw();
+    }
+
+    for (const o of this.obstacles) {
+      o.draw();
     }
   }
 }

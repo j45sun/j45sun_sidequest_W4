@@ -21,6 +21,8 @@ let levelIndex = 0;
 let world; // WorldLevel instance (current level)
 let player; // BlobPlayer instance
 
+let gameState = "play";
+
 function preload() {
   // Load the level data from disk before setup runs.
   data = loadJSON("levels.json");
@@ -40,14 +42,24 @@ function setup() {
 }
 
 function draw() {
+  // Check game state. If we're on the end screen, draw it and skip the rest of the loop.
+  if (gameState === "end") {
+    drawEndScreen();
+    return;
+  }
+
   world.drawWorld();
 
-  player.update(world.platforms);
+  player.update(world.platforms, world.obstacles);
+
   player.draw(world.theme.blob);
 
   if (world.goal && world.goal.isCollectedBy(player)) {
-    const next = (levelIndex + 1) % data.levels.length;
-    loadLevel(next);
+    if (levelIndex === data.levels.length - 1) {
+      gameState = "end";
+    } else {
+      loadLevel(levelIndex + 1);
+    }
   }
 
   fill(0);
@@ -65,6 +77,56 @@ function keyPressed() {
     const next = (levelIndex + 1) % data.levels.length;
     loadLevel(next);
   }
+}
+
+// end screen
+function drawEndScreen() {
+  background(250, 243, 221);
+
+  fill(0);
+  textAlign(CENTER, CENTER);
+  textSize(32);
+  text("You Win!", width / 2, height / 2 - 60);
+
+  drawReplayButton();
+}
+
+// replay button
+function drawReplayButton() {
+  const bw = 160;
+  const bh = 50;
+  const bx = width / 2 - bw / 2;
+  const by = height / 2;
+
+  // button background
+  fill(255, 166, 158);
+  rect(bx, by, bw, bh, 8);
+
+  // button text
+  fill(0);
+  textSize(20);
+  text("Replay", width / 2, by + bh / 2);
+}
+
+// press button function
+function mousePressed() {
+  if (gameState !== "end") return;
+
+  const bw = 160;
+  const bh = 50;
+  const bx = width / 2 - bw / 2;
+  const by = height / 2;
+
+  if (mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh) {
+    restartGame();
+  }
+}
+
+// restart game function
+function restartGame() {
+  gameState = "play";
+  levelIndex = 0;
+  loadLevel(0);
 }
 
 /*
