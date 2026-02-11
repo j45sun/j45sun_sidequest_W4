@@ -63,6 +63,7 @@ function draw() {
   }
 
   fill(0);
+  textAlign(LEFT, TOP);
   text(world.name, 10, 18);
 }
 
